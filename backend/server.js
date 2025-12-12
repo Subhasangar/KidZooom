@@ -9,7 +9,7 @@ const app = express();
 
 // CORS - allow your Vercel domain + localhost for dev
 const allowedOrigins = [
-  (process.env.FRONTEND_URL && process.env.FRONTEND_URL.trim()) || "https://kid-zooom-a4mw-pvozn1iyx-subhasangars-projects.vercel.app",
+  (process.env.FRONTEND_URL && process.env.FRONTEND_URL.trim()) || "https://kid-zooom.vercel.app/",
   "http://localhost:5173"
 ];
 
