@@ -6,7 +6,7 @@ if (!process.env.DATABSE_URL){
     process.exit(1);
 }
 const pool=new Pool({
-    ConnectionString;
+    ConnectionString:
     process.env.DATABSE_URL,
     ssl:{
         rejectUnauthorized:false},
