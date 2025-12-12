@@ -1,36 +1,42 @@
+// backend/server.js
+require("dotenv").config();
 const express = require("express");
-const mysql = require("mysql2");
 const cors = require("cors");
+const pool = require("./db"); // <-- Postgres pool (backend/db.js)
 const nodemailer = require("nodemailer");
 
 const app = express();
 
-app.use(cors());
+// CORS - allow your Vercel domain + localhost for dev
+const allowedOrigins = [
+  (process.env.FRONTEND_URL && process.env.FRONTEND_URL.trim()) || "https://kid-zooom-a4mw-pvozn1iyx-subhasangars-projects.vercel.app",
+  "http://localhost:5173"
+];
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "kids_learning",
-});
-
-db.connect((err) => {
-  if (err) {
-    console.log("MySQL Error:", err);
-  } else {
-    console.log("MySQL Connected!");
+// ---- Test route (checks DB connectivity) ----
+app.get("/api/ping", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT NOW() as now");
+    res.json({ ok: true, time: rows[0] });
+  } catch (err) {
+    console.error("DB Error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
+// ---- Nodemailer setup (use env vars) ----
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "ssubhasangar@gmail.com",          
-    pass: "xgmm fwcp gmmz tbju ",         
-  },
+    user: process.env.EMAIL_USER, // set on Render: EMAIL_USER
+    pass: process.env.EMAIL_PASS // set on Render: EMAIL_PASS (app password)
+  }
 });
 
+// ---- Feedback route ----
 app.post("/api/feedback", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -39,17 +45,10 @@ app.post("/api/feedback", async (req, res) => {
   }
 
   const mailOptions = {
-    from: '"KidZooom Feedback" <ssubhasangar@gmail.com>',     
-    to: "Subhasangar143@gmail.com",                               
+    from: `"KidZooom Feedback" <${process.env.EMAIL_USER}>`,
+    to: process.env.FEEDBACK_TO || process.env.EMAIL_USER, // set FEEDBACK_TO on Render or default to EMAIL_USER
     subject: `New Feedback from ${name}`,
-    text: `New feedback from KidZooom:
-
-Name: ${name}
-Email: ${email}
-
-Message:
-${message}
-`,
+    text: `New feedback from KidZooom:\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n`
   };
 
   try {
@@ -61,38 +60,44 @@ ${message}
   }
 });
 
-app.post("/register", (req, res) => {
+// ---- Auth: register & login using Postgres ----
+// Note: In production you should hash passwords (bcrypt). This example keeps same logic as your original but still recommend hashing.
+app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+  if (!name || !email || !password)
+    return res.status(400).json({ message: "All fields required" });
 
-  const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-  db.query(sql, [name, email, password], (err, result) => {
-    if (err) {
-      console.log("DB ERROR:", err);
-      return res.status(500).json({ message: "DB error" });
-    }
-    return res.json({ message: "User registered!" });
-  });
+  try {
+    const insertQuery = `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`;
+    const { rows } = await pool.query(insertQuery, [name, email, password]);
+    return res.json({ message: "User registered!", id: rows[0].id });
+  } catch (err) {
+    console.error("DB ERROR (register):", err);
+    // unique email violation handling
+    if (err.code === "23505") return res.status(409).json({ message: "Email already exists" });
+    return res.status(500).json({ message: "DB error" });
+  }
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ message: "All fields required" });
 
-  const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-  db.query(sql, [email, password], (err, result) => {
-    if (err) {
-      console.log("DB ERROR:", err);
-      return res.status(500).json({ message: "DB error" });
+  try {
+    const selectQuery = `SELECT id, name, email FROM users WHERE email = $1 AND password = $2 LIMIT 1`;
+    const { rows } = await pool.query(selectQuery, [email, password]);
+    if (rows.length > 0) {
+      return res.json({ message: "Login successful", user: rows[0] });
     }
-
-    if (result.length > 0) {
-      return res.json({ message: "Login successful" });
-    } else {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-  });
+    return res.status(401).json({ message: "Invalid email or password" });
+  } catch (err) {
+    console.error("DB ERROR (login):", err);
+    return res.status(500).json({ message: "DB error" });
+  }
 });
 
-const PORT = 5000;
+// ---- Start server ----
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT} (port ${PORT})`);
 });
