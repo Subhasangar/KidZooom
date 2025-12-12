@@ -1,6 +1,6 @@
 require('dotenv').config(); // Load .env during local development
 
-const mysql {Pool} = require('pg');
+const {Pool} = require('pg');
 if (!process.env.DATABSE_URL){
     console.log("ERROR: database_url is not set in environment variables.");
     process.exit(1);
