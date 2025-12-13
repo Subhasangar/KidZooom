@@ -4,6 +4,11 @@ const express = require("express");
 const cors = require("cors");
 const pool = require("./db"); // <-- Postgres pool (backend/db.js)
 const nodemailer = require("nodemailer");
+app.use(cors({
+  origin:"*",
+  methods:["GET","POST"],
+  allowedHeaders:["Content-Type"]
+}));
 
 const app = express();
 
