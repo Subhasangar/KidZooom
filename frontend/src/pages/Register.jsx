@@ -11,7 +11,7 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/register", {
+      const res = await axios.post("https://kidzooom-backend.onrender.com", {
         name,
         email,
         password
