@@ -10,7 +10,7 @@ app.use(cors({
   Origin : [
   "https://kid-zooom.vercel.app", // Vercel frontend
   "http://localhost:5173" // local dev
-];
+],
 methods:["GET","POST"],
 credentials:true;
 }));
