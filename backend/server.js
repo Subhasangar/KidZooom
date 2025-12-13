@@ -6,11 +6,14 @@ const pool = require("./db");
 
 const app = express(); // ✅ CREATE APP ONCE
 
-// ---- CORS CONFIG ----
-const allowedOrigins = [
+app.use(cors({
+  const allowedOrigins = [
   "https://kid-zooom.vercel.app", // Vercel frontend
   "http://localhost:5173" // local dev
 ];
+methods:["GET","POST"],
+credentials:true;
+}));
 
 app.use(cors({
   origin: (origin, callback) => {
