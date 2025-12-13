@@ -2,69 +2,84 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db"); // <-- Postgres pool (backend/db.js)
-const nodemailer = require("nodemailer");
-app.use(cors({
-  origin:"*",
-  methods:["GET","POST"],
-  allowedHeaders:["Content-Type"]
-}));
+const pool = require("./db"); // postgres pool
 
-const app = express();
+const app = express(); // ✅ app FIRST
 
-// server.js (replace the top CORS + register/login sections)
+// ---- CORS ----
 const allowedOrigins = [
-  (process.env.FRONTEND_URL && process.env.FRONTEND_URL.trim()) || "https://kid-zooom.vercel.app",
+  process.env.FRONTEND_URL || "https://kid-zooom.vercel.app",
   "http://localhost:5173"
 ];
 
-// Allow exact origin(s)
 app.use(cors({
-  origin: function(origin, callback) {
-    // allow requests with no origin (mobile apps, curl)
+  origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
-    const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-    return callback(new Error(msg), false);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("Not allowed by CORS"));
   }
 }));
+
 app.use(express.json());
 
-// ---- replace register/login routes with /api/ prefix ----
+// ---- TEST ROUTE ----
+app.get("/api/ping", (req, res) => {
+  res.json({ ok: true, message: "Backend is working 🚀" });
+});
+
+// ---- REGISTER ----
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password)
+
+  if (!name || !email || !password) {
     return res.status(400).json({ message: "All fields required" });
+  }
 
   try {
-    const insertQuery = `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`;
-    const { rows } = await pool.query(insertQuery, [name, email, password]);
-    return res.json({ message: "User registered!", id: rows[0].id });
+    const query =
+      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id";
+
+    const result = await pool.query(query, [name, email, password]);
+
+    res.json({
+      message: "User registered successfully",
+      id: result.rows[0].id
+    });
   } catch (err) {
-    console.error("DB ERROR (register):", err);
-    if (err.code === "23505") return res.status(409).json({ message: "Email already exists" });
-    return res.status(500).json({ message: "DB error" });
+    console.error(err);
+    if (err.code === "23505") {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+    res.status(500).json({ message: "Server error" });
   }
 });
 
+// ---- LOGIN ----
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: "All fields required" });
 
   try {
-    const selectQuery = `SELECT id, name, email FROM users WHERE email = $1 AND password = $2 LIMIT 1`;
-    const { rows } = await pool.query(selectQuery, [email, password]);
-    if (rows.length > 0) {
-      return res.json({ message: "Login successful", user: rows[0] });
+    const query =
+      "SELECT id, name, email FROM users WHERE email=$1 AND password=$2";
+
+    const result = await pool.query(query, [email, password]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
-    return res.status(401).json({ message: "Invalid email or password" });
+
+    res.json({
+      message: "Login successful",
+      user: result.rows[0]
+    });
   } catch (err) {
-    console.error("DB ERROR (login):", err);
-    return res.status(500).json({ message: "DB error" });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
+// ---- START SERVER ----
 const PORT = process.env.PORT || 5000;
-app.listen( PORT, () => {
-  console.log('serverver running on ${PORT}');
-})
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
