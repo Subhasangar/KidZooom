@@ -3,28 +3,37 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
+const express = require("express");
+const cors = require("cors");
 
-const app = express(); 
-const allowedOrigins= [
-  "https://kid-zooom.vercel.app", 
-  "http://localhost:5173" 
+const app = express();
+
+/* ✅ ALLOWED ORIGINS */
+const allowedOrigins = [
+  "https://kid-zooom.vercel.app",
+  "http://localhost:5173"
 ];
-app.use(cors({
-  origin: function (origin,callback) {
-    if(!origin) return callback(null,true);
-    if(allowedOrigins,includes(origin) ){
-      callback(null,true);
-    }else{
-      callback(new Error("cors Blocked"));
+
+/* ✅ CORS OPTIONS */
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // Postman / server-to-server
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
+    return callback(null, true); // TEMP allow all (debug)
   },
-  methods:["GET","POST","PUT","DELETE"],
-credentials:false
-}));
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: false
+};
 
+/* ✅ APPLY CORS — MUST BE FIRST */
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
-
+/* ✅ JSON PARSER — MUST BE AFTER CORS */
 app.use(express.json());
+
 
 // ---- HEALTH CHECK ----
 app.get("/api/ping", (req, res) => {
