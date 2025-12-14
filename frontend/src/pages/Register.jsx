@@ -13,7 +13,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${VITE_API_URL}/api/register`, {
+      const res = await fetch(`${API_URL}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
