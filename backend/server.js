@@ -12,7 +12,7 @@ app.use(cors({
   "http://localhost:5173" // local dev
 ],
 methods:["GET","POST"],
-credentials:true;
+credentials:true
 }));
 
 app.use(cors({
