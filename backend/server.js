@@ -4,12 +4,12 @@ const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
 
-const app = express(); // ✅ CREATE APP ONCE
+const app = express(); 
 
 app.use(cors({
   Origin : [
-  "https://kid-zooom.vercel.app", // Vercel frontend
-  "http://localhost:5173" // local dev
+  "https://kid-zooom.vercel.app", 
+  "http://localhost:5173" // 
 ],
 methods:["GET","POST"],
 credentials:true
