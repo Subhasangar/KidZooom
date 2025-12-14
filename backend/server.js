@@ -1,10 +1,9 @@
 // backend/server.js
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
-const express = require("express");
-const cors = require("cors");
 
 const app = express();
 
@@ -27,20 +26,19 @@ const corsOptions = {
   credentials: false
 };
 
-/* ✅ APPLY CORS — MUST BE FIRST */
+/* ✅ APPLY CORS (VERY IMPORTANT ORDER) */
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-/* ✅ JSON PARSER — MUST BE AFTER CORS */
+/* ✅ BODY PARSER */
 app.use(express.json());
 
-
-// ---- HEALTH CHECK ----
+/* ✅ HEALTH CHECK */
 app.get("/api/ping", (req, res) => {
   res.json({ ok: true });
 });
 
-// ---- REGISTER ----
+/* ✅ REGISTER */
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -68,7 +66,7 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// ---- LOGIN ----
+/* ✅ LOGIN */
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -93,8 +91,8 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// ---- START ----
-const PORT = process.env.PORT || 5000;
+/* ✅ START SERVER */
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`✅ Backend running on port ${PORT}`);
 });
