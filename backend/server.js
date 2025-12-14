@@ -5,15 +5,24 @@ const cors = require("cors");
 const pool = require("./db");
 
 const app = express(); 
-
-app.use(cors({
-  Origin : [
+const allowedOrigins= [
   "https://kid-zooom.vercel.app", 
   "http://localhost:5173" 
-],
-methods:["GET","POST","PUT","DELETE"],
+];
+app.use(cors({
+  origin: function (origin,callback) {
+    if(!origin) return callback(null,true);
+    if(allowedOrigins,includes(origin) ){
+      callback(null,true);
+    }else{
+      callback(new Error("cors Blocked"));
+    }
+  },
+  methods:["GET","POST","PUT","DELETE"],
 credentials:false
 }));
+
+
 
 app.use(express.json());
 
