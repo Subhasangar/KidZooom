@@ -13,22 +13,18 @@ const allowedOrigins = [
   "http://localhost:5173"
 ];
 
-/* ✅ CORS OPTIONS */
-const corsOptions = {
+/* ✅ CORS CONFIG (NO app.options("*") ❌) */
+app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Postman / server-to-server
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(null, true); // TEMP allow all (debug)
+    return callback(null, true); // allow all for now
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: false
-};
-
-/* ✅ APPLY CORS (VERY IMPORTANT ORDER) */
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+}));
 
 /* ✅ BODY PARSER */
 app.use(express.json());
