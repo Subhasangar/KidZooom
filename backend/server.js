@@ -9,22 +9,10 @@ const app = express();
 app.use(cors({
   Origin : [
   "https://kid-zooom.vercel.app", 
-  "http://localhost:5173" // 
+  "http://localhost:5173" 
 ],
-methods:["GET","POST"],
-credentials:true
-}));
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error("CORS blocked"));
-  },
-  methods: ["GET", "POST"],
-  credentials: false
+methods:["GET","POST","PUT","DELETE"],
+credentials:false
 }));
 
 app.use(express.json());
