@@ -1,4 +1,4 @@
 {
-    "rottes":[
+    "routes":[
         {"src": "/(.*)","dest":"/index.html"} ]
 }
