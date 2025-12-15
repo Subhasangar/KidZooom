@@ -15,7 +15,7 @@ import Gamesmemory from "./pages/Gamesmemory";
 import About from "./pages/About";
 
 import ShashaGuide from "./components/ShashaGuide";
-
+console.log("app.jsx loaded");
 export default function App() {
   return (
     <BrowserRouter>
