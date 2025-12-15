@@ -30,7 +30,7 @@ function Login() {
       }
 
       alert("Login successful ✅");
-      console.log("navigating to home /home now..";)
+      console.log("navigating to home /home now..");
       navigate("/home");
       console.log("User:", data.user);
     } catch (err) {
