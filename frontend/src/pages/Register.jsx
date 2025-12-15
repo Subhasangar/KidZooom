@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {useNavigate}from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -7,6 +8,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate=useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ function Register() {
       setName("");
       setEmail("");
       setPassword("");
+      navigate("/login");
     } catch (err) {
       console.error(err);
       alert("Server not reachable ❌");
