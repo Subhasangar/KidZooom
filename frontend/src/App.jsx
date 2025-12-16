@@ -1,9 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-export default function App(){
-  return(
-    <div style={{padding:40,fontSize:30,color :"red" }}>REACT IS WORKING </div>
-  );
-}
+import { Routes, Route, Navigate } from "react-router-dom";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -17,14 +13,14 @@ import Gamesquiz from "./pages/Gamesquiz";
 import Gamesdiff from "./pages/Gamesdiff";
 import Gamesmemory from "./pages/Gamesmemory";
 import About from "./pages/About";
-
 import ShashaGuide from "./components/ShashaGuide";
-console.log("app.jsx loaded");
+
+console.log("App.jsx loaded");
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <>
       <Routes>
-
         {/* Auth */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
@@ -50,17 +46,14 @@ export default function App() {
         {/* 404 */}
         <Route
           path="*"
-          element={
-            <div style={{ textAlign: "center", marginTop: "40px" }}>
-              <h2>404 - Page Not Found</h2>
-            </div>
-          }
+          element={<h2 style={{ textAlign: "center" }}>404 - Page Not Found</h2>}
         />
-
       </Routes>
 
-      {/* Global assistant */}
       <ShashaGuide />
-    </BrowserRouter>
+    </>
   );
 }
+
+
+
