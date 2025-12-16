@@ -9,7 +9,7 @@ const app = express();
 
 /* ✅ ALLOWED ORIGINS */
 const allowedOrigins = [
-  "https://kid-zooom.vercel.app",
+  "https://kid-zooom.vercel.app/",
   "http://localhost:5173"
 ];
 
