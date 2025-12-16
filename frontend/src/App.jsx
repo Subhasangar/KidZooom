@@ -1,5 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+export default function App(){
+  return(
+    <div style={{padding:40,fontSize:30,color :"red" }}>REACT IS WORKING </div>
+  );
+}
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
