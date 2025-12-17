@@ -35,7 +35,7 @@ app.get("/api/ping", (req, res) => {
 });
 
 /* ✅ REGISTER */
-app.post({API_URL}"/api/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -63,7 +63,7 @@ app.post({API_URL}"/api/register", async (req, res) => {
 });
 
 /* ✅ LOGIN */
-app.post({API_URL}"/api/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
