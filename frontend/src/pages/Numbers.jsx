@@ -60,8 +60,12 @@ export default function Numbers() {
 
     if (window.shashaSay) window.shashaSay(msg);
 
-    const cleanText = msg.replace(/[^a-zA-Z ]/g, " ").replace(/\s+/g, " ").trim();
-    speak(cleanText);   
+    const cleanText =String(msg || " ").replace(/<[^>]*/g, " ").replace(/\p{Emoji}/gu,_toggle=" " ).replace(/\s+/g," ").trim();
+    if (window.shashaSay){
+      window.shashaSay(cleanText);
+    }else{
+      speak(cleanText);
+    }
   };
 
   return (
