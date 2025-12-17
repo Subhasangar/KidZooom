@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = "https://kidzooom-backend.onrender.com";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch("${API_URL}/api/register", {
+      const res = await fetch("https://kidzooom-backend.onrender.com/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
